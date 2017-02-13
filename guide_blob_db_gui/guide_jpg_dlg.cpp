@@ -6,7 +6,6 @@
 #include <QSqlQuery>
 #include <QSqlRecord>
 #include <QVariant>
-#include "debug_print_setup.h"
 #include <QSqlError>
 #include <QPainter>
 #include <QPoint>
@@ -18,7 +17,7 @@ guide_jpg_dlg::guide_jpg_dlg(QWidget *parent) :
 {
 	ui->setupUi(this);
 
-	m_pPixmap		= new QPixmap(":/TEST/MEDICAL/JPG/jpg_test3.jpg");
+	m_pPixmap		= new QPixmap(":/TEST/JPG/jpg_test3.jpg");
 
 	setWindowTitle("Stretch Background Image on Resize");
 }
@@ -48,7 +47,7 @@ void guide_jpg_dlg::paintEvent(QPaintEvent *)
 void guide_jpg_dlg::on_pushButton_load_momory_clicked()
 {
 	ui->label_jpg->setPixmap(*m_pPixmap);
-	QString dbName( "/CTR/image_test.db" );
+	QString dbName( "image_test.db" );
 	QSqlDatabase db = QSqlDatabase::addDatabase( "QSQLITE" );
 	db.setDatabaseName( dbName );
 	db.open();
@@ -70,12 +69,12 @@ void guide_jpg_dlg::on_pushButton_load_momory_clicked()
 	query.prepare( "INSERT INTO imgTable (filename, imagedata) VALUES ('jpg_test3.jpg', :imageData)" );
 	query.bindValue( ":imageData", inByteArray );
 	if( !query.exec() ) {
-		EPRINTF("query error : %s" , query.lastError().text().toStdString().c_str());
+		DEBUG_ERROR("query error : %s" , query.lastError().text().toStdString().c_str());
 	}
 
 	// Get image data back from database
 	if( !query.exec( "SELECT imagedata from imgTable" )) {
-		EPRINTF("query error : %s" , query.lastError().text().toStdString().c_str());
+		DEBUG_ERROR("query error : %s" , query.lastError().text().toStdString().c_str());
 	}
 	query.first();
 	QByteArray outByteArray = query.value( 0 ).toByteArray();
